@@ -21,7 +21,13 @@ pipeline {
             steps {
                 sh 'npm install'
             }
-        }    
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing the project'
+                sh 'npm test'
+            }
+        }   
         stage('Deploy to Heroku') {
           steps {
             withCredentials([usernameColonPassword(credentialsId: 'heroku12', variable: 'HEROKU_CREDENTIALS' )]){
