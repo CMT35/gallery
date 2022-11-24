@@ -22,12 +22,6 @@ pipeline {
                 sh 'npm install'
             }
         }    
-        stage('Build ') {
-            steps {
-                echo "Build number ${BUILD_NUMBER}"
-                sh 'npm run build'      
-            }
-        }
         stage('Deploy to Heroku') {
           steps {
             withCredentials([usernameColonPassword(credentialsId: 'heroku12', variable: 'HEROKU_CREDENTIALS' )]){
