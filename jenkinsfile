@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs "node"
+    }
+
+
+    environment {
+        VERSION_NUMBER = '1.0'
+    }
+
+    stages {
+        stage('Clone repository') {
+            steps {
+                echo 'Cloning repository'
+                git 'https://github.com/CMT35/gallery.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }    
+        stage('Build ') {
+            steps {
+                echo "Build number ${BUILD_NUMBER}"
+                sh 'npm run build'      
+            }
+        }
+        stage('Deploy to Heroku') {
+          steps {
+            withCredentials([usernameColonPassword(credentialsId: 'heroku12', variable: 'HEROKU_CREDENTIALS' )]){
+              sh 'git push https://${HEROKU_CREDENTIALS}@git.heroku.com/independent-project1.gitmaster'
+            }
+          }
+        }
+        
+    }
+    post {
+        success {
+            slackSend color: "good", message: "Build ${BUILD_NUMBER} ran successfully"
+        }
+        
+        failure {
+            slackSend color: "danger", message: "Build ${BUILD_NUMBER} failed"
+        }
+    }
+}
